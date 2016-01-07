@@ -1,0 +1,8 @@
+/resources/public/js
+/resources/public/main.js
+/target
+/.idea
+/.lein-repl-history
+/.nrepl-port
+/figwheel_server.log
+*.iml
