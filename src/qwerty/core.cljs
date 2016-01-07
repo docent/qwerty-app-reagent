@@ -5,25 +5,28 @@
     [reagent.core :as r]
     [qwerty.state :refer [app-state]]))
 
-(def View (r/adapt-react-class (.-View ktoa/react-native)))
-(def Text (r/adapt-react-class (.-Text ktoa/react-native)))
+(enable-console-print!)
+
+(when ktoa/react-native
+  (set! js/React (js/require "react-native/Libraries/react-native/react-native.js")))
 
 (defn render-mobile []
-  [View
-   [Text "Mobile:"]
-   [Text "Mobile:" (:msg @app-state)]])
+  (let [View (r/adapt-react-class (.-View ktoa/react-native))
+        Text (r/adapt-react-class (.-Text ktoa/react-native))]
+    [View
+     [Text "Mobile:"]
+     [Text "Mobile:" (:msg @app-state)]]))
 
+(defn render-browser []
+  [:div
+   [:div "Browser:"]
+   [:div (:msg @app-state)]])
 
-  (defn render-browser []
-    [:div
-     [:div "Browser:"]
-     [:div (:msg @app-state)]])
+(defn RootComponent []
+  (if ktoa/react-native
+    (fn [] [render-mobile])
+    (fn [] [render-browser])))
 
-  (defn RootComponent []
-    (if ktoa/react-native
-      #([render-mobile])
-      #([render-browser])))
-
-  (ktoa/register! "RootViewRN"
-                  #(r/render RootComponent %)
-                  #(.querySelector js/document "#app"))
+(ktoa/register! "RootViewRN"
+                #(r/render [RootComponent] %)
+                #(.querySelector js/document "#app"))
